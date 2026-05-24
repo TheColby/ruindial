@@ -13,9 +13,13 @@ public:
     void resized() override;
 
 private:
+    class RuinDialLookAndFeel;
+
     OneKnobDestroyerAudioProcessor& audioProcessor;
+    std::unique_ptr<RuinDialLookAndFeel> lookAndFeel;
     juce::Slider amountSlider;
     juce::Label titleLabel;
+    juce::Label subtitleLabel;
     juce::Label amountLabel;
 
     using SliderAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
