@@ -1,0 +1,8 @@
+build/
+out/
+__pycache__/
+*.wav
+*.aiff
+*.aif
+*.mp3
+.DS_Store
