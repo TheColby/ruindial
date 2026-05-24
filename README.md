@@ -8,23 +8,42 @@
 - Keep the DSP path readable enough to tune against the original offline Python sketch.
 - Add presets once the macro curve feels good.
 
+## Install
+
+Build and install the Audio Unit, VST3, and standalone app for the current macOS user:
+
+```bash
+scripts/install.sh
+```
+
+The script installs to:
+
+- `~/Library/Audio/Plug-Ins/Components/RuinDial.component`
+- `~/Library/Audio/Plug-Ins/VST3/RuinDial.vst3`
+- `~/Applications/RuinDial.app`
+
+If you already have JUCE checked out:
+
+```bash
+scripts/install.sh --juce /path/to/JUCE
+```
+
+For a build-only check:
+
+```bash
+scripts/install.sh --skip-install
+```
+
 ## Build
 
 If you already have JUCE checked out:
 
 ```bash
-cmake -S labs/one-knob-destroyer -B out/build/one-knob-destroyer -DJUCE_SOURCE_DIR=/path/to/JUCE
-cmake --build out/build/one-knob-destroyer
+cmake -S . -B build -DJUCE_SOURCE_DIR=/path/to/JUCE
+cmake --build build
 ```
 
 If you want CMake to fetch JUCE:
-
-```bash
-cmake -S labs/one-knob-destroyer -B out/build/one-knob-destroyer
-cmake --build out/build/one-knob-destroyer
-```
-
-When this folder is used as a standalone repo, run the same commands from the repo root:
 
 ```bash
 cmake -S . -B build
