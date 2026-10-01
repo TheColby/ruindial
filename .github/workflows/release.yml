@@ -1,0 +1,61 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  macos:
+    runs-on: macos-latest
+    env:
+      MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
+      MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
+      CODESIGN_IDENTITY: ${{ secrets.CODESIGN_IDENTITY }}
+      APPLE_ID: ${{ secrets.APPLE_ID }}
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure signing certificate
+        if: env.MACOS_CERTIFICATE != ''
+        run: |
+          echo "$MACOS_CERTIFICATE" | base64 -D > certificate.p12
+          security create-keychain -p actions build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p actions build.keychain
+          security import certificate.p12 -k build.keychain -P "$MACOS_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: -s -k actions build.keychain
+
+      - name: Configure notarization profile
+        if: env.APPLE_ID != ''
+        run: xcrun notarytool store-credentials actions-notary --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" --password "$APPLE_APP_PASSWORD"
+
+      - name: Package
+        env:
+          VERSION: ${{ github.ref_name }}
+        run: |
+          chmod +x scripts/install.sh scripts/package.sh
+          if [[ -n "$APPLE_ID" ]]; then export NOTARY_PROFILE=actions-notary; fi
+          VERSION="${VERSION#v}" scripts/package.sh
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.zip
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON
+      - run: cmake --build build --config Release --parallel 4
+      - run: ctest --test-dir build --build-config Release --output-on-failure
+      - name: Archive VST3
+        shell: pwsh
+        run: Compress-Archive -Path build/RuinDial_artefacts/Release/VST3/RuinDial.vst3 -DestinationPath RuinDial-${{ github.ref_name }}-Windows-VST3.zip
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: RuinDial-*-Windows-VST3.zip

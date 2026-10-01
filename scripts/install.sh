@@ -4,7 +4,9 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BUILD_DIR="${BUILD_DIR:-"$ROOT_DIR/build"}"
 CONFIG="${CONFIG:-Release}"
+BUILD_JOBS="${BUILD_JOBS:-4}"
 INSTALL_PLUGINS=1
+RUN_TESTS=1
 
 usage() {
   cat <<'USAGE'
@@ -17,11 +19,13 @@ Options:
   --config NAME        Build configuration. Defaults to Release.
   --juce PATH          Path to a local JUCE checkout.
   --skip-install       Build only; do not copy plugin bundles.
+  --skip-tests         Do not run the DSP test suite after building.
   -h, --help           Show this help.
 
 Environment:
   BUILD_DIR            Build directory override.
   CONFIG               Build configuration override.
+  BUILD_JOBS           Parallel build jobs. Defaults to 4.
   JUCE_SOURCE_DIR      Path to a local JUCE checkout.
 USAGE
 }
@@ -42,6 +46,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --skip-install)
       INSTALL_PLUGINS=0
+      shift
+      ;;
+    --skip-tests)
+      RUN_TESTS=0
       shift
       ;;
     -h|--help)
@@ -70,7 +78,12 @@ echo "Configuring RuinDial..."
 cmake "${cmake_args[@]}"
 
 echo "Building RuinDial ($CONFIG)..."
-cmake --build "$BUILD_DIR" --config "$CONFIG"
+cmake --build "$BUILD_DIR" --config "$CONFIG" --parallel "$BUILD_JOBS"
+
+if [[ "$RUN_TESTS" -eq 1 ]]; then
+  echo "Testing RuinDial..."
+  ctest --test-dir "$BUILD_DIR" --build-config "$CONFIG" --output-on-failure
+fi
 
 if [[ "$INSTALL_PLUGINS" -eq 0 ]]; then
   echo "Build complete. Skipping install."

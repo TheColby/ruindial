@@ -1,76 +1,68 @@
 # RuinDial Roadmap
 
-RuinDial is a one-control damage plugin. The project should stay fast, opinionated, and musical: one big decision, a small number of tasteful supporting controls, and no maze of expert parameters.
+RuinDial stays one-knob-first: supporting controls should make the result safer and easier to place without turning the plugin into a generic multi-effect.
 
-## v0.1 - Plugin Foundation
+## v0.1 - Foundation
 
-Status: done
+Status: complete
 
-- JUCE CMake project
-- Audio Unit, VST3, and standalone targets
-- One `Destroy` macro parameter
-- Saturation, bit-depth reduction, sample hold, wobble, filtering, noise, and alias blend
-- Custom dark faceplate with brushed-metal knob
-- macOS build/install script
+- JUCE CMake project with AU, VST3, and standalone targets
+- Initial destruction macro and custom metal-knob interface
+- macOS build and user-level installation script
 - Offline Python reference processor
 
-## v0.2 - Usability Pass
+## v0.2 - Release-Safe Core
 
-- Add input and output gain trims
-- Add output soft clip or limiter to prevent surprise level jumps
-- Add dry/wet mix while keeping `Destroy` as the main control
-- Add A/B-safe default parameter values
-- Make the numeric value display more musical, such as `Clean`, `Scuffed`, `Damaged`, `Ruined`
-- Add a visible bypass state in the editor
-- Verify AU/VST3 behavior in Logic, Ableton Live, REAPER, and a standalone host
+Status: complete
 
-## v0.3 - Presets and Character Modes
+- Transparent zero position and safer clean default
+- Input and output trims, dry/wet mix, and smooth bypass
+- Final soft limiter and visible clip indication
+- Stable parameter state and smoothed automation
+- Deterministic DSP tests for transparency, bounded output, and finite samples
 
-- Add a small preset bank:
-  - `Tape Scab`
-  - `Toy DAC`
-  - `Voltage Sag`
-  - `Phone Speaker`
-  - `Bitrot`
-  - `Motor Wobble`
-- Add 3 or 4 hidden macro curves behind a mode switch
-- Keep the main screen one-knob-first; avoid exposing raw DSP internals
-- Add preset save/load behavior if JUCE host support is not enough
+## v0.3 - Sound and Presets
 
-## v0.4 - Visual Polish
+Status: complete
 
-- Add resize-safe layout
-- Add retina-friendly detail and better meter contrast
-- Add a subtle output activity meter
-- Add a small status strip for mode, clipping, and sample-rate context
-- Replace the default standalone app chrome where practical
-- Add screenshot assets for GitHub and plugin listings
+- Tape Scab, Toy DAC, Voltage Sag, and Bitrot character modes
+- Eight curated factory programs
+- Raw, 2x, and 4x quality modes
+- A/B snapshots and constrained randomization
 
-## v0.5 - Release Hygiene
+## v0.4 - Interface
 
-- Add CI build checks for macOS
-- Add signed/notarized macOS release artifacts
-- Add release packaging for AU, VST3, and standalone app
-- Add a changelog
-- Add license and contribution docs
-- Tag a first alpha release
+Status: complete
 
-## v1.0 - Stable Character Plugin
+- Resizable layout
+- Output activity meter and clipping indicator
+- Compact mode, quality, gain, mix, bypass, A/B, and preset controls
+- Retina-safe vector drawing and a brushed-metal primary control
 
-- Stable parameter IDs
-- Host automation tested
-- No known denormal/performance issues
-- Presets curated by ear
-- Installer/package workflow documented
-- Demo audio examples published
-- Clear compatibility notes for macOS, AU, VST3, Intel, and Apple Silicon
+## v0.5 - Release Engineering
 
-## Later Ideas
+Status: complete
 
-- Windows VST3 support
-- Linux VST3 or CLAP support
-- CLAP target through a companion framework or port
-- Oversampling mode for smoother heavy drive
+- macOS, Windows, and Linux CI configuration
+- Automated DSP test execution
+- macOS packaging with optional signing and notarization
+- Tagged GitHub release workflow for macOS and Windows artifacts
+- Installer, uninstaller, changelog, manual, compatibility notes, and contribution guide
+
+## v1.0 - Validation Gate
+
+Implementation is complete. Release validation still requires access to the named commercial hosts and Apple distribution credentials.
+
+- Apple `auval` validation complete for version 1.0.0
+- Verify state, automation, resize, bypass, and latency in Logic Pro, Ableton Live, and REAPER
+- Verify the Windows VST3 artifact on physical Windows hardware
+- Sign and notarize using the UglySoundGenerator Labs Apple Developer identity
+- Record final demo audio and capture release screenshots
+- Tag `v1.0.0` only after the compatibility checklist is signed off
+
+## Beyond v1.0
+
+- CLAP distribution
 - MIDI-triggered damage bursts
-- Randomization button with undo-safe parameter changes
-- Companion CLI that batch-processes files using the same DSP curve
+- Batch-processing command-line companion
+- User preset browser and portable preset exchange

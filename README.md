@@ -1,67 +1,59 @@
 # RuinDial
 
-`RuinDial` is a JUCE Audio Unit/VST3/standalone plugin. One macro value drives saturation, bit depth, sample-rate damage, wobble, filtering, and noise.
+RuinDial is a JUCE audio-destruction plugin from UglySoundGenerator Labs. Its main `Destroy` macro moves from transparent audio through saturation, bit reduction, sample-rate damage, wobble, filtering, noise, and controlled aliasing.
 
-See [ROADMAP.md](ROADMAP.md) for planned plugin polish, presets, release packaging, and platform work.
+The project builds Audio Unit, VST3, and standalone targets on macOS. Windows and Linux build VST3 and standalone targets.
 
-## First milestone
+## Features
 
-- Build AU, VST3, and standalone plugin targets from one CMake project.
-- Keep the DSP path readable enough to tune against the original offline Python sketch.
-- Add presets once the macro curve feels good.
+- One primary musical destruction macro with a transparent zero position
+- Tape Scab, Toy DAC, Voltage Sag, and Bitrot character models
+- Input trim, dry/wet mix, output trim, smooth bypass, and soft output limiting
+- Raw, 2x, and 4x quality modes with latency-compensated dry/wet mixing
+- Eight factory programs, two A/B snapshots, and constrained randomization
+- Resizable interface with a brushed-metal main control and output meter
+- Stable parameter IDs, host state restoration, and deterministic DSP tests
 
-## Install
-
-Build and install the Audio Unit, VST3, and standalone app for the current macOS user:
+## Install on macOS
 
 ```bash
 scripts/install.sh
 ```
 
-The script installs to:
+This builds, tests, and installs:
 
 - `~/Library/Audio/Plug-Ins/Components/RuinDial.component`
 - `~/Library/Audio/Plug-Ins/VST3/RuinDial.vst3`
 - `~/Applications/RuinDial.app`
 
-If you already have JUCE checked out:
-
-```bash
-scripts/install.sh --juce /path/to/JUCE
-```
-
-For a build-only check:
-
-```bash
-scripts/install.sh --skip-install
-```
+Use `scripts/uninstall.sh --dry-run` to inspect the uninstall targets, then `scripts/uninstall.sh` to remove them.
 
 ## Build
 
-If you already have JUCE checked out:
+With an existing JUCE checkout:
 
 ```bash
-cmake -S . -B build -DJUCE_SOURCE_DIR=/path/to/JUCE
-cmake --build build
+cmake -S . -B build -DJUCE_SOURCE_DIR=/path/to/JUCE -DBUILD_TESTING=ON
+cmake --build build --config Release
+ctest --test-dir build --build-config Release --output-on-failure
 ```
 
-If you want CMake to fetch JUCE:
+Without `JUCE_SOURCE_DIR`, CMake fetches JUCE 8.0.6 automatically.
+
+## Package a Release
 
 ```bash
-cmake -S . -B build
-cmake --build build
+VERSION=1.0.0 scripts/package.sh
 ```
 
-The CMake project builds `AU`, `VST3`, and `Standalone` formats on macOS. The generated plugin bundles live under the CMake build tree at `build/RuinDial_artefacts/`.
+Set `CODESIGN_IDENTITY` to sign the bundles and `NOTARY_PROFILE` to submit them through an existing `notarytool` keychain profile. Tagged GitHub releases use the same script and support the signing secrets documented in [the release guide](docs/RELEASING.md).
 
-## Offline reference
+## Documentation
 
-The original Python sketch remains useful for fast algorithm checks:
+- [User manual](docs/MANUAL.md)
+- [Compatibility and validation](docs/COMPATIBILITY.md)
+- [Release process](docs/RELEASING.md)
+- [Roadmap](ROADMAP.md)
+- [Contributing](CONTRIBUTING.md)
 
-```bash
-python3 destroyer.py input.wav out/hum_destroyed.wav --amount 0.82
-```
-
-## Why this should become a repo
-
-Small character plugins are useful because they make fast decisions. This version is intentionally one-control, with the ugliness curve concentrated in `Source/DestroyerDsp.h` so it is easy to retune by ear.
+RuinDial is available under the [MIT License](LICENSE).

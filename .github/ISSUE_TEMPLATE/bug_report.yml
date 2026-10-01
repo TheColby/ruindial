@@ -1,0 +1,36 @@
+name: Bug report
+description: Report a reproducible RuinDial problem
+body:
+  - type: input
+    id: version
+    attributes:
+      label: RuinDial version
+    validations:
+      required: true
+  - type: dropdown
+    id: format
+    attributes:
+      label: Format
+      options: [Audio Unit, VST3, Standalone]
+    validations:
+      required: true
+  - type: input
+    id: host
+    attributes:
+      label: Host and version
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
