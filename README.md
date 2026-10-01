@@ -2,6 +2,8 @@
 
 `RuinDial` is a JUCE Audio Unit/VST3/standalone plugin. One macro value drives saturation, bit depth, sample-rate damage, wobble, filtering, and noise.
 
+See [ROADMAP.md](ROADMAP.md) for planned plugin polish, presets, release packaging, and platform work.
+
 ## First milestone
 
 - Build AU, VST3, and standalone plugin targets from one CMake project.
